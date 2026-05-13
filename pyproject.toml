@@ -1,0 +1,7 @@
+[project]
+name = "kviewer"
+version = "0.1.0"
+description = "A Kubernetes companion CLI that provides quick cluster snapshots and useful visibility into cluster states."
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = []
