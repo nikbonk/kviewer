@@ -9,17 +9,25 @@ def main():
     parser = argparse.ArgumentParser(description="Kubernetes Viewer CLI")
     subparsers = parser.add_subparsers(dest="command", required=True, metavar="")
 
-    list_parser = subparsers.add_parser("list", help="List resources")
-    list_parser.add_argument("--configfile", default=None)
-    list_parser.set_defaults(func=parse_config)
+    kubeconfig_parser = subparsers.add_parser(
+        "kubeconfig", help="List information about the kubeconfig"
+    )
+    kubeconfig_parser.add_argument("--configfile", default=None)
+    kubeconfig_parser.set_defaults(func=parse_config)
 
+    # friendly fallback to help if no command is provided
     if len(sys.argv) == 1:
         parser.print_help()
         return
 
     args = parser.parse_args()
 
-    config_path = args.configfile or os.environ.get("KUBECONFIG")
+    # trying to read kubeconfig from command line or env var and expanding '~' to user path
+    config_path = (
+        os.path.expanduser(args.configfile)
+        if args.configfile
+        else os.path.expanduser(os.environ.get("KUBECONFIG", ""))
+    )
 
     if not config_path:
         print("No config file provided")
