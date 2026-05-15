@@ -1,40 +1,46 @@
 import argparse
-import os
 import sys
 
-from src.configParser import parse_config
+import src.configParser
+
+
+def build_parser():
+    # Root parser
+    parser = argparse.ArgumentParser(description="Kubernetes Viewer CLI")
+
+    # shared "parent" parser
+    common = argparse.ArgumentParser(add_help=False)
+    common.add_argument(
+        "-c",
+        "--configfile",
+        default=None,
+        help="Path to the kubeconfig file",
+        metavar="",
+    )
+
+    # Subcommand registry
+    subparsers = parser.add_subparsers(dest="command", required=True, metavar="")
+
+    # Functions register their subcommands
+    src.configParser.setup_args(subparsers, parents=[common])
+
+    return parser
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Kubernetes Viewer CLI")
-    subparsers = parser.add_subparsers(dest="command", required=True, metavar="")
+    parser = build_parser()
 
-    kubeconfig_parser = subparsers.add_parser(
-        "kubeconfig", help="List information about the kubeconfig"
-    )
-    kubeconfig_parser.add_argument("--configfile", default=None)
-    kubeconfig_parser.set_defaults(func=parse_config)
-
-    # friendly fallback to help if no command is provided
+    # Show help if no subcommand is provided
     if len(sys.argv) == 1:
         parser.print_help()
-        return
+        sys.exit(0)
 
+    # Parse CLI input
     args = parser.parse_args()
 
-    # trying to read kubeconfig from command line or env var and expanding '~' to user path
-    config_path = (
-        os.path.expanduser(args.configfile)
-        if args.configfile
-        else os.path.expanduser(os.environ.get("KUBECONFIG", ""))
-    )
-
-    if not config_path:
-        print("No config file provided")
-        parser.print_help()
-        return
-
-    args.func(config_path)
+    # let argparse dispatch the command via the registered function
+    # each subcommand attaches its own function via `set_defaults`
+    args.func(args)
 
 
 if __name__ == "__main__":
