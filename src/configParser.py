@@ -51,6 +51,7 @@ def handle_kubeconfig(args):
     clusters = parse_kubeconfig(config_file)
 
     table = []
+    i = 0
     for i, (name, server) in enumerate(clusters, start=1):
         table.append([i, name, server])
 
@@ -58,6 +59,7 @@ def handle_kubeconfig(args):
     print(f"Total amount of clusters: {i}")
 
 
+# Load the kubeconfig file to be used by the Kubernetes client
 def load_kubeconfig(args):
     config_file = resolve_config_path(args)
     if not config_file:
