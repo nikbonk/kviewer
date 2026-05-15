@@ -1,6 +1,8 @@
 import os
 
 import yaml
+from kubernetes import config
+from tabulate import tabulate
 
 
 def setup_args(subparsers, parents=None):
@@ -48,7 +50,19 @@ def handle_kubeconfig(args):
 
     clusters = parse_kubeconfig(config_file)
 
-    print("Index".ljust(10) + "Name".ljust(20) + "Server".ljust(30))
-
+    table = []
     for i, (name, server) in enumerate(clusters, start=1):
-        print(f"{i:<10}{name:<20}{server:<30}")
+        table.append([i, name, server])
+
+    print(tabulate(table, headers=["#", "Name", "Server"]))
+    print(f"Total amount of clusters: {i}")
+
+
+def load_kubeconfig(args):
+    config_file = resolve_config_path(args)
+    if not config_file:
+        print(
+            "No kubeconfig file found.\nMake sure KUBECONFIG is set or use --configfile."
+        )
+        exit(1)
+    config.load_kube_config(config_file)

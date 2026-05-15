@@ -5,7 +5,9 @@ description = "A Kubernetes companion CLI that provides quick cluster snapshots 
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "kubernetes>=35.0.0",
     "pytest>=9.0.3",
+    "tabulate>=0.10.0",
 ]
 [tool.pytest.ini_options]
 pythonpath = ["."]
