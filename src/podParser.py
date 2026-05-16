@@ -2,6 +2,7 @@ import sys
 
 from kubernetes import client
 from tabulate import tabulate
+from urllib3.exceptions import MaxRetryError
 
 from src.configParser import load_kubeconfig
 
@@ -31,8 +32,7 @@ def setup_args(subparsers, parents=None):
 
     # List all pods that are not in a running phase
     parse_not_running = pods_subparsers.add_parser(
-        "not-running",
-        help="List pods that are not running",
+        "not-running", help="List pods that are not running", parents=parents or []
     )
     parse_not_running.set_defaults(func=list_not_running_pods)
 
@@ -51,7 +51,24 @@ def list_all_pods(args):
 
     v1 = client.CoreV1Api()
 
-    pods = v1.list_pod_for_all_namespaces(watch=False)
+    try:
+        # Setting a low connection timeout to fail fast since we are unable to control
+        # the amount of retries as mentioned in this issue: https://github.com/kubernetes-client/python/issues/962
+        # 0.2s connect timeout (connection shouldn't take longer than 500ms)
+        # 2s read timeout
+        pods = v1.list_pod_for_all_namespaces(watch=False, _request_timeout=(0.2, 2))
+    except Exception as e:
+        # Better Error formatting in cases where a user might hit the retry limit
+        if isinstance(e, MaxRetryError):
+            root = e.reason
+            host = e.pool.host
+            url = e.url
+
+            print(f"Failed to reach Kubernetes API at {host}")
+            print(f"Endpoint: {url}")
+            print(f"Cause: {type(root).__name__}")
+            print(f"Detail: {root}")
+            exit(1)
 
     table = []
     i = 0
@@ -72,7 +89,24 @@ def list_not_running_pods(args):
 
     v1 = client.CoreV1Api()
 
-    pods = v1.list_pod_for_all_namespaces(watch=False)
+    try:
+        # Setting a low connection timeout to fail fast since we are unable to control
+        # the amount of retries as mentioned in this issue: https://github.com/kubernetes-client/python/issues/962
+        # 0.2s connect timeout (connection shouldn't take longer than 500ms)
+        # 2s read timeout
+        pods = v1.list_pod_for_all_namespaces(watch=False, _request_timeout=(0.2, 2))
+    except Exception as e:
+        # Better Error formatting in cases where a user might hit the retry limit
+        if isinstance(e, MaxRetryError):
+            root = e.reason
+            host = e.pool.host
+            url = e.url
+
+            print(f"Failed to reach Kubernetes API at {host}")
+            print(f"Endpoint: {url}")
+            print(f"Cause: {type(root).__name__}")
+            print(f"Detail: {root}")
+            exit(1)
 
     table = []
     i = 0
