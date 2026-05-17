@@ -41,9 +41,9 @@ def setup_args(subparsers, parents=None):
     parse_not_running.set_defaults(func=list_not_running_pods)
 
     # Show help if no subcommand is provided
-    if len(sys.argv) == 2:
-        parse_pods.print_help()
-        sys.exit(0)
+    # if len(sys.argv) == 2:
+    #     parse_pods.print_help()
+    #     sys.exit(0)
 
 
 def get_pods():

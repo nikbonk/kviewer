@@ -3,6 +3,7 @@ import sys
 
 import src.configParser
 import src.podParser
+import src.subjectParser
 
 
 def build_parser():
@@ -25,6 +26,7 @@ def build_parser():
     # Functions register their subcommands
     src.configParser.setup_args(subparsers, parents=[common])
     src.podParser.setup_args(subparsers, parents=[common])
+    src.subjectParser.setup_subject_args(subparsers, parents=[common])
 
     return parser
 
