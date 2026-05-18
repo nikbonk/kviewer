@@ -13,8 +13,17 @@ def setup_args(subparsers, parents=None):
         parents=parents or [],
     )
 
+    parser_kubeconfig_context = subparsers.add_parser(
+        "kubeconfig-context",
+        help="List information about the current kubeconfig context",
+        parents=parents or [],
+    )
+
     # Attach the `handle_kubeconfig` function to the kubeconfig subcommand
     parser_kubeconfig.set_defaults(func=handle_kubeconfig)
+
+    # Attach the `get_context_info` function to the kubeconfig-context subcommand
+    parser_kubeconfig_context.set_defaults(func=get_context_info)
 
 
 def resolve_config_path(args):
@@ -26,6 +35,36 @@ def resolve_config_path(args):
             expanded_path = os.path.expanduser(path)
             if os.path.exists(expanded_path):
                 return expanded_path
+    return None
+
+
+def get_context_info(args):
+    config_file = resolve_config_path(args)
+
+    if not config_file:
+        print(
+            "No kubeconfig file found.\n"
+            "Make sure KUBECONFIG is set or use --configfile."
+        )
+        exit(1)
+
+    with open(config_file, "r") as f:
+        data = yaml.safe_load(f)
+
+    current_context = data.get("current-context")
+
+    for ctx in data.get("contexts", []):
+        if ctx["name"] == current_context:
+            namespace = ctx["context"].get("namespace", "default")
+            cluster = ctx["context"]["cluster"]
+            user = ctx["context"]["user"]
+            context_info = {
+                "namespace": namespace,
+                "cluster": cluster,
+                "user": user,
+            }
+            return context_info
+
     return None
 
 
