@@ -1,8 +1,8 @@
 from kubernetes import client
 from tabulate import tabulate
 
-from src.configParser import get_context_info, load_kubeconfig
-from src.resolve import resolve_namespaces
+from .configParser import get_context_info, load_kubeconfig
+from .resolve import resolve_namespaces
 
 
 def setup_subject_args(subparsers, parents=None):

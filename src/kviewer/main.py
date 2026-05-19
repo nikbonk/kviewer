@@ -1,9 +1,7 @@
 import argparse
 import sys
 
-import src.configParser
-import src.podParser
-import src.subjectParser
+from . import configParser, podParser, subjectParser
 
 
 def build_parser():
@@ -33,9 +31,9 @@ def build_parser():
     subparsers = parser.add_subparsers(dest="command", required=True, metavar="")
 
     # Functions register their subcommands
-    src.configParser.setup_args(subparsers, parents=[common])
-    src.podParser.setup_args(subparsers, parents=[common])
-    src.subjectParser.setup_subject_args(subparsers, parents=[common])
+    configParser.setup_args(subparsers, parents=[common])
+    podParser.setup_args(subparsers, parents=[common])
+    subjectParser.setup_subject_args(subparsers, parents=[common])
 
     return parser
 
