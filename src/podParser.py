@@ -4,6 +4,7 @@ from tabulate import tabulate
 from urllib3.exceptions import MaxRetryError
 
 from src.configParser import get_context_info, load_kubeconfig
+from src.resolve import resolve_namespaces
 from src.toDict import pods_to_dict
 
 
@@ -66,13 +67,7 @@ def get_namespaced_pod_rows(args):
     load_kubeconfig(args)
     context_info = get_context_info(args)
 
-    if args.namespaces:
-        namespaces = args.namespaces
-    elif context_info:
-        # making sure namespaces is a list even if it's a single namespace
-        namespaces = [context_info["namespace"]]
-    else:
-        namespaces = ["default"]
+    namespaces = resolve_namespaces(args, context_info)
 
     all_rows = []
     failed_namespaces = []
