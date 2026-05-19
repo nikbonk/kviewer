@@ -3,6 +3,7 @@ import sys
 
 import src.configParser
 import src.podParser
+import src.subjectParser
 
 
 def build_parser():
@@ -19,12 +20,22 @@ def build_parser():
         metavar="",
     )
 
+    common.add_argument(
+        "-n",
+        "--namespaces",
+        default=None,
+        help="List of namespaces to filter resources by. Set like this: -n/--namespaces ns1 ns2 ns3...",
+        metavar="",
+        nargs="+",
+    )
+
     # Subcommand registry
     subparsers = parser.add_subparsers(dest="command", required=True, metavar="")
 
     # Functions register their subcommands
     src.configParser.setup_args(subparsers, parents=[common])
     src.podParser.setup_args(subparsers, parents=[common])
+    src.subjectParser.setup_subject_args(subparsers, parents=[common])
 
     return parser
 
