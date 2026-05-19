@@ -3,9 +3,9 @@ from kubernetes.client.exceptions import ApiException
 from tabulate import tabulate
 from urllib3.exceptions import MaxRetryError
 
-from src.configParser import get_context_info, load_kubeconfig
-from src.resolve import resolve_namespaces
-from src.toDict import pods_to_dict
+from .configParser import get_context_info, load_kubeconfig
+from .resolve import resolve_namespaces
+from .toDict import pods_to_dict
 
 
 def setup_args(subparsers, parents=None):

@@ -1,4 +1,4 @@
-from src.configParser import parse_kubeconfig
+from src.kviewer.configParser import parse_kubeconfig
 
 
 def test_clusters_table():
