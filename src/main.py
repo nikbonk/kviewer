@@ -20,6 +20,15 @@ def build_parser():
         metavar="",
     )
 
+    common.add_argument(
+        "-n",
+        "--namespaces",
+        default=None,
+        help="List of namespaces to filter resources by. Set like this: -n/--namespaces ns1 ns2 ns3...",
+        metavar="",
+        nargs="+",
+    )
+
     # Subcommand registry
     subparsers = parser.add_subparsers(dest="command", required=True, metavar="")
 
