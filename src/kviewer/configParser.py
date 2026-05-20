@@ -2,7 +2,8 @@ import os
 
 import yaml
 from kubernetes import config
-from tabulate import tabulate
+
+from .toTable import build_cluster_table, render
 
 
 def setup_args(subparsers, parents=None):
@@ -94,11 +95,5 @@ def handle_kubeconfig(args):
         exit(1)
 
     clusters = parse_kubeconfig(config_file)
-
-    table = []
-    i = 0
-    for i, (name, server) in enumerate(clusters, start=1):
-        table.append([i, name, server])
-
-    print(tabulate(table, headers=["#", "Name", "Server"]))
-    print(f"Total amount of clusters: {i}")
+    output = build_cluster_table(clusters)
+    render(output, args)

@@ -1,7 +1,7 @@
 import argparse
 import sys
 
-from . import configParser, podParser, subjectParser
+from . import configParser, podParser
 
 
 def build_parser():
@@ -27,13 +27,26 @@ def build_parser():
         nargs="+",
     )
 
+    common.add_argument(
+        "-o",
+        "--output",
+        default=None,
+        help="Output format (supported: html, json, yaml)",
+        metavar="",
+    )
+
+    common.add_argument(
+        "--out-file",
+        help="Write output to a file",
+        metavar="FILE",
+    )
+
     # Subcommand registry
     subparsers = parser.add_subparsers(dest="command", required=True, metavar="")
 
     # Functions register their subcommands
     configParser.setup_args(subparsers, parents=[common])
     podParser.setup_args(subparsers, parents=[common])
-    subjectParser.setup_subject_args(subparsers, parents=[common])
 
     return parser
 
