@@ -1,11 +1,11 @@
 from kubernetes import client
 from kubernetes.client.exceptions import ApiException
-from tabulate import tabulate
 from urllib3.exceptions import MaxRetryError
 
 from .configParser import get_context_info, load_kubeconfig
 from .resolve import resolve_namespaces
 from .toDict import pods_to_dict
+from .toTable import build_pod_table, render
 
 
 def setup_args(subparsers, parents=None):
@@ -84,22 +84,14 @@ def get_namespaced_pod_rows(args):
     return all_rows, failed_namespaces
 
 
-def render_table(rows):
-    table = []
-    for i, pod in enumerate(rows, start=1):
-        table.append([i, pod["name"], pod["namespace"], pod["status"]])
-
-    print(tabulate(table, headers=["#", "Name", "Namespace", "Status"]))
-    print(f"Total amount of pods: {len(rows)}")
-
-
 # --- Command Line Interface ---
 
 
 def list_all_pods(args):
     try:
         rows, failed_namespaces = get_namespaced_pod_rows(args)
-        render_table(rows)
+        output = build_pod_table(rows)
+        render(output, args)
 
         # Beauty line!
         print()
@@ -120,7 +112,8 @@ def list_not_running_pods(args):
     try:
         rows, failed_namespaces = get_namespaced_pod_rows(args)
         not_running_rows = [row for row in rows if row["status"] != "Running"]
-        render_table(not_running_rows)
+        output = build_pod_table(not_running_rows)
+        render(output, args)
 
         # Beauty line!
         print()
