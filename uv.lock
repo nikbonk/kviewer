@@ -111,7 +111,7 @@ wheels = [
 [[package]]
 name = "kviewer"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "kubernetes" },
     { name = "pytest" },

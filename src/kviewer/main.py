@@ -1,7 +1,7 @@
 import argparse
 import sys
 
-from . import configParser, podParser
+from . import configParser, nodeParser, podParser
 
 
 def build_parser():
@@ -47,6 +47,7 @@ def build_parser():
     # Functions register their subcommands
     configParser.setup_args(subparsers, parents=[common])
     podParser.setup_args(subparsers, parents=[common])
+    nodeParser.setup_args(subparsers, parents=[common])
 
     return parser
 

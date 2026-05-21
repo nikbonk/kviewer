@@ -12,6 +12,7 @@ def render_cli(data):
 
 
 def render_html(data, template_path):
+
     table_html = tabulate(
         data["rows"],
         headers=data["headers"],

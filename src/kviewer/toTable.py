@@ -56,3 +56,33 @@ def build_cluster_table(clusters):
         "rows": rows,
         "total_label": "Total clusters",
     }
+
+
+def build_node_table(nodes):
+    rows = []
+
+    for i, node in enumerate(nodes, start=1):
+        cap_string = "\n".join([f"{k}: {v}" for k, v in node.status.capacity.items()])
+        role_string = ""
+        role = []
+        for label in node.metadata.labels:
+            if label.startswith("node-role.kubernetes.io/"):
+                role.append(label.split("/")[-1])
+        role_string = "\n".join(role)
+
+        rows.append(
+            [
+                i,
+                node.metadata.name,
+                node.status.node_info.kubelet_version,
+                role_string,
+                cap_string,
+            ]
+        )
+
+    return {
+        "title": "Nodes",
+        "headers": ["#", "Name", "Version", "Role", "Capacity"],
+        "rows": rows,
+        "total_label": "Total nodes",
+    }
